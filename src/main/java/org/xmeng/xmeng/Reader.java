@@ -1,3 +1,5 @@
+package org.xmeng.xmeng;
+
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -73,9 +75,9 @@ public class Reader {
                     lineCount += 1;
 
                     // skip rows already read
-                    if (lineCount <= lastRead) {
-                        continue;
-                    }
+//                    if (lineCount <= lastRead) {
+//                        continue;
+//                    }
 
                     MappingIterator<Data> it = mapper.readerFor(Data.class).with(schema).readValues(line);
 

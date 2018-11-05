@@ -1,5 +1,8 @@
+package org.xmeng.xmeng;
+
 import java.io.IOException;
 import java.util.Properties;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serdes;
@@ -12,14 +15,14 @@ public class Filter {
     public static void filter() {
         Properties config = new Properties();
 
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, System.getenv("GROUP_ID"));
-        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, System.getenv("KAFKA_BROKER"));
+        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "streama");
+        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         ObjectMapper mapper = new ObjectMapper();
 
-        final String topic = System.getenv("SOURCE_TOPIC");
+        final String topic = "raw";
         KStreamBuilder builder = new KStreamBuilder();
         KStream<Integer, String> raw = builder.stream(topic);
 
@@ -37,7 +40,7 @@ public class Filter {
                     return false;
                 }
         );
-        filtered.to(System.getenv("TARGET_TOPIC"));
+        filtered.to("filtered");
 
         KafkaStreams streams = new KafkaStreams(builder, config);
         streams.start();

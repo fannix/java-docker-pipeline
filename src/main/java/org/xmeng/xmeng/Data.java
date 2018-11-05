@@ -1,3 +1,5 @@
+package org.xmeng.xmeng;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({"timestamp", "longitude", "latitude", "mmsi", "heading", "rate_of_turn", "speed", "status"})

@@ -1,3 +1,6 @@
+package org.xmeng.xmeng;
+
+
 public class Main {
 
     public static void main(String [] args) {
@@ -6,13 +9,14 @@ public class Main {
         }
 
         switch (args[0]) {
-            case "reader":
-                Reader.read();
-                break;
             case "filter":
                 Filter.filter();
                 break;
+            case "reader":
+                Reader.read();
+                break;
+            default:
+                System.exit(-1);
         }
-        System.exit(-1);
     }
 }
