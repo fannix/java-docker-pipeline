@@ -9,7 +9,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
 
 public class Filter {
-    public static void main(final String[] args) {
+    public static void filter() {
         Properties config = new Properties();
 
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, System.getenv("GROUP_ID"));

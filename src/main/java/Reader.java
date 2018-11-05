@@ -20,7 +20,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 public class Reader {
-    public static void main(String[] args) {
+    public static void read() {
         ZooKeeper zk = null;
         Logger logger = LoggerFactory.getLogger(Reader.class);
         try {
