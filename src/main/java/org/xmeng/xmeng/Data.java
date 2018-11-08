@@ -13,7 +13,7 @@ public class Data {
     public double speed;
     public int status;
 
-    public boolean valid() {
+    boolean valid() {
         return longitude > 3.8 && longitude < 4.75 &&
                 latitude > 51.7 && latitude < 52.0;
     }

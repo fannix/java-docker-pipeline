@@ -21,8 +21,8 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-public class Reader {
-    public static void read() {
+class Reader {
+    static void read() {
         ZooKeeper zk = null;
         Logger logger = LoggerFactory.getLogger(Reader.class);
         try {
