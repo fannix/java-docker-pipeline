@@ -15,14 +15,14 @@ class Filter {
     static void filter() {
         Properties config = new Properties();
 
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "streama");
-        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(StreamsConfig.APPLICATION_ID_CONFIG, System.getenv("GROUP_ID"));
+        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, System.getenv("KAFKA_BROKER"));
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         ObjectMapper mapper = new ObjectMapper();
 
-        final String topic = "raw";
+        final String topic = System.getenv("SOURCE_TOPIC");
         KStreamBuilder builder = new KStreamBuilder();
         KStream<Integer, String> raw = builder.stream(topic);
 
@@ -40,7 +40,7 @@ class Filter {
                     return false;
                 }
         );
-        filtered.to("filtered");
+        filtered.to(System.getenv("TARGET_TOPIC"));
 
         KafkaStreams streams = new KafkaStreams(builder, config);
         streams.start();
