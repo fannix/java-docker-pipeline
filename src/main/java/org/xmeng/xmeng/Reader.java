@@ -75,9 +75,9 @@ public class Reader {
                     lineCount += 1;
 
                     // skip rows already read
-//                    if (lineCount <= lastRead) {
-//                        continue;
-//                    }
+                    if (lineCount <= lastRead) {
+                        continue;
+                    }
 
                     MappingIterator<Data> it = mapper.readerFor(Data.class).with(schema).readValues(line);
 
@@ -94,9 +94,14 @@ public class Reader {
                         logger.info("current position {}", position);
                     }
                 }
+
+                // delete the counter if the data is successfully processed.
+                zk.delete(progressCounter, -1);
             }
         } catch (IOException | KeeperException | InterruptedException e) {
             e.printStackTrace();
+            logger.error("The data might not be processed completely. Please rerun the program");
+            System.exit(-1);
         }
     }
 }
