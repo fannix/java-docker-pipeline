@@ -101,17 +101,12 @@ class Reader {
                         zk.setData(progressCounter, lineCount.toString().getBytes(),-1);
                         String position = new String(zk.getData(progressCounter, null, null));
                         logger.info("current position {}", position);
+
+                        waitAck(logger, futureList);
                     }
                 }
 
-                try {
-                    for (Future<RecordMetadata> future: futureList) {
-                        future.get();
-                    }
-                } catch (ExecutionException e) {
-                    logger.warn("error when waiting for future");
-                    e.printStackTrace();
-                }
+                waitAck(logger, futureList);
                 // delete the counter if the data is successfully processed.
                 zk.delete(progressCounter, -1);
             }
@@ -119,6 +114,19 @@ class Reader {
             e.printStackTrace();
             logger.error("The data might not be processed completely. Please rerun the program");
             System.exit(-1);
+        }
+    }
+
+    private static void waitAck(Logger logger, List<Future<RecordMetadata>> futureList) throws InterruptedException {
+        try {
+            for (Future<RecordMetadata> future : futureList) {
+                future.get();
+            }
+        } catch (ExecutionException e) {
+            logger.warn("error when waiting for future");
+            e.printStackTrace();
+        } finally {
+            futureList.clear();
         }
     }
 }
