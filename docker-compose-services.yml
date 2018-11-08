@@ -1,0 +1,22 @@
+version: '2'
+services:
+    reader:
+        network_mode: host
+        build: .
+        command: java -jar /app.jar reader
+        environment:
+            - 'KAFKA_BROKER=localhost:9092'
+            - 'FILE_PATH=/data/ais.csv'
+            - 'TOPIC=raw'
+        volumes:
+            - ./data:/data
+
+    filter:
+        network_mode: host
+        build: .
+        command: java -jar /app.jar filter
+        environment:
+            - 'KAFKA_BROKER=localhost:9092'
+            - 'GROUP_ID=filter'
+            - 'SOURCE_TOPIC=raw'
+            - 'TARGET_TOPIC=filtered'
