@@ -34,5 +34,9 @@ public class DataTest {
         data.latitude = 51.9;
 
         Assert.assertTrue(data.valid());
+
+        data.longitude = 4.271833419799805;
+        data.latitude =  51.87966537475586;
+        Assert.assertTrue(data.valid());
     }
 }

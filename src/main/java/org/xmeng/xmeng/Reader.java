@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.zookeeper.*;
@@ -18,8 +19,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 class Reader {
     static void read() {
@@ -70,6 +75,8 @@ class Reader {
                 // skip the header;
                 String line = fileReader.readLine();
 
+                List<Future<RecordMetadata>> futureList = new ArrayList<>();
+
                 while ((line = fileReader.readLine()) != null) {
 
                     lineCount += 1;
@@ -85,7 +92,9 @@ class Reader {
                         Data data = it.next();
                         String json = oMapper.writeValueAsString(data);
 
-                        producer.send(new ProducerRecord<>(System.getenv("TOPIC"), json.hashCode(), json));
+                        // If we don't wait until the future to finish, the program will exit before some message are acked by Kafka brokers
+                        Future<RecordMetadata> future = producer.send(new ProducerRecord<>(System.getenv("TOPIC"), json.hashCode(), json));
+                        futureList.add(future);
                     }
 
                     if (lineCount % 100 == 0) {
@@ -95,6 +104,14 @@ class Reader {
                     }
                 }
 
+                try {
+                    for (Future<RecordMetadata> future: futureList) {
+                        future.get();
+                    }
+                } catch (ExecutionException e) {
+                    logger.warn("error when waiting for future");
+                    e.printStackTrace();
+                }
                 // delete the counter if the data is successfully processed.
                 zk.delete(progressCounter, -1);
             }
